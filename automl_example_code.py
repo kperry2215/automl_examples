@@ -34,7 +34,7 @@ def run_h2o_automl(dataframe, variable_to_predict,
     x = dataframe.columns
     y = variable_to_predict
     x.remove(y)
-    #Pull the training and test data out at a 75/25 split.
+    #Pull the training/validation/test data out at a 75/12.5/12.5 split.
     train, test, validate = dataframe.split_frame(ratios=[.75, .125])
     # Run AutoML (limited to 1 hour max runtime by default)
     aml = H2OAutoML(max_models=max_number_models, seed=1)
@@ -61,7 +61,7 @@ def run_tpot_automl(dataframe,
     Outputs:
         File containing the machine learning pipeline for the best performing model.
     """
-    #Remvoe the target column to get the features dataframe
+    #Remove the target column to get the features dataframe
     features_dataframe = dataframe.loc[:, dataframe.columns != variable_to_predict]
     X_train, X_test, y_train, y_test = train_test_split(features_dataframe, dataframe[variable_to_predict],
                                                     train_size=0.75, test_size=0.25)
@@ -84,7 +84,6 @@ if __name__ == "__main__" :
     #Convert all of the categorical features variables to numeric (use LabelEncoder)
     d = defaultdict(LabelEncoder)    
     df_label_encoded = df.apply(lambda x: d[x.name].fit_transform(x))
-    #Oversample the Class variable so that the 
     #Run the model through h2o's autoML function and 
     #generate a list of the best performing models
     run_h2o_automl(dataframe=df, 
